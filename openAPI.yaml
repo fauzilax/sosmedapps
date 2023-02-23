@@ -1,0 +1,660 @@
+openapi: 3.0.3
+info:
+  title: Sosmed Apps
+  description: This is API for Group Project By Alterra Academy
+  version: "1.0.0"
+  contact:
+    email: alfianadityadwi@gmail.com
+  license:
+    name: Apache 2.0
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+tags:
+  - name: register
+    description: Endpoint for user registration
+  - name: login
+    description: Endpoint for verifying who a user is
+  - name: logout
+  - name: search
+    description: Endpoint for find users
+  - name: users
+    description: Endpoint for perform operations on user
+  - name: contents
+    description: Endpoint to perform operations on user posts
+  - name: comments
+    description: Endpoint to perform operations on comment
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/icxz1/SosmedAPI/1.0.0
+  - url: https://shirayuki.site
+    description: primarry link
+
+paths:
+  /register:
+    post:
+      tags:
+        - register
+      description: feature for user registration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+            example:
+              name: "Alfian"
+              username: "alfianad11"
+              email: "alfianadityadwi@gmail.com"
+              password: "alfian1234"
+      responses:
+        201: 
+          description: "success insert data"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: "Success create account"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+
+  /login:
+    post:
+      tags:
+        - "login"
+      summary: login account
+      description: feature for verifying who a user is
+      security:
+        - JWTAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+              example: 
+                username: "alfianad11"
+                password: "alfian1234"
+      responses:
+        200:
+          description: "success login"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseObject'
+              example:
+                data: 
+                  id: 1
+                  name: "Alfian Aditya"
+                  username: "alfianad11"
+                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJ1c2VySUQiOjR9.QTZxERh4CwC_UnL_eJvTi_A_qdLeBZ-IjR4nqoxjodk"
+                message: "login success"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+          
+  /logout:
+    get:
+      tags: 
+        - logout
+      summary: logout account
+      description: Logout profile
+      security: 
+        - JWTAuth: []
+      responses:
+        200:
+          description: "success logout"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseObject'
+              example:
+                message: "logout success"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+    
+  /users:
+    put:
+      tags:
+        - users
+      summary: update profile
+      description: Update user profile
+      security:
+        - JWTAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+          application/json:
+            schema:
+              type: object
+              example: 
+                name: "albert"
+                username: "albertenst"
+                bio: "Hello, my name is albert"
+                email: "albertxxx@gmail.com"
+                password: "secret"
+                image: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673881607/go-cloudinary/llhltxp55elirjkmlyld.png"
+      responses:
+        201:
+          description: update success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  id : 1
+                  name: "albert"
+                  username: "albertenst"
+                  bio: "Hello, my name is albert"
+                  email: "albertxxx@gmail.com"
+                  password: "secret"
+                  image: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673881607/go-cloudinary/llhltxp55elirjkmlyld.png"
+                message: "update profile success"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+
+    delete:
+      tags:
+        - users
+      summary: delete data user
+      description: delete data from user
+      security:
+        - JWTAuth: []
+      responses:
+        200:
+          description: deleted user success
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: "delete data user success"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+
+    get:
+      tags: 
+        - users
+      summary: get data user by id user
+      description: getting data user by id user
+      security: 
+        - JWTAuth: []
+      responses:
+        200:
+          description: success show profile
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 1
+                    bio: "Hello my name Alfian Aditya"
+                    username: "alfian2316"
+                    profilepicture: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673881607/go-cloudinary/llhltxp55elirjkmlyld.png"
+                    contents: [{
+                      id: 1,
+                      content: "This morning I make good scramble egg for breakfast. Yumm!",
+                      image: "https://sosmedgroup2.s3.amazonaws.com/2023-01-16%2006%3A40%3A47.jpg",
+                      create_at: "2023-01-16 13:56:42",
+                      username: "alfian2316",
+                      profilepicture: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673881607/go-cloudinary/llhltxp55elirjkmlyld.png",
+                      comments: 3
+                      },
+                      {
+                      id: 2,
+                      content: "Good coffe = Good mood!",
+                      image: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673892611/go-cloudinary/gxjitapwl7pjcgskb3ph.jpg",
+                      create_at: "2023-01-16 15:30:42",
+                      username: "alfian2316",
+                      profilepicture: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673892611/go-cloudinary/gxjitapwl7pjcgskb3ph.jpg",
+                      comments: 3
+                      }]
+                  message: "success show profile"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+          
+  /users/search:
+    get:
+      tags:
+        - users
+      summary: find user
+      description: findding user by username
+      security: 
+        - JWTAuth: []
+      parameters: 
+        - in: query
+          name: offset
+          schema:
+            type: string
+          description: the numbers of result user
+        - in: query
+          name: q
+          schema:
+            example: "alfian2316"
+            type: string
+          required: true
+          description: the keyword used to find username
+      responses:
+        200:
+          description: success find user
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    {
+                      id: 3,
+                      username: "alfian2316",
+                      name: "Alfian Aditya"
+                    }
+                  message: "success find user"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+
+  /contents:
+    post:
+      tags:
+        - contents
+      summary: add content to user
+      description: adding content post to user
+      security:
+        - JWTAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+            example: 
+              content: "Beautiful day"
+              image: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673881607/go-cloudinary/llhltxp55elirjkmlyld.png"
+                
+      responses:
+        201:
+          description: success create content
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id : 1
+                    content: "Beautiful day"
+                    image: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673881607/go-cloudinary/llhltxp55elirjkmlyld.png"
+                    create_at: "2023-01-16 15:30:42"
+                  message: "success create content"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+
+    get:
+      tags:
+        - contents
+      summary: show all contents
+      description: "showing all contents"
+      responses:
+        200:
+          description: success show all content
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    - id: 1
+                      content: "This morning I make good scramble egg for breakfast. Yumm!"
+                      image: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673881607/go-cloudinary/llhltxp55elirjkmlyld.png"
+                      create_at: "2023-01-16 13:56:42"
+                      users:
+                        - id_user: 1
+                          username: "alfian2316"
+                          profilepicture: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673881607/go-cloudinary/llhltxp55elirjkmlyld.png"
+                      comments: 3
+                    - id: 2
+                      content: "BBQ TIME!"
+                      image: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673892611/go-cloudinary/gxjitapwl7pjcgskb3ph.jpg"
+                      create_at: "2023-01-16 13:56:42"
+                      users:
+                        - id_user: 2
+                          username: "alfian2316"
+                          profilepicture: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673892611/go-cloudinary/gxjitapwl7pjcgskb3ph.jpg"
+                      comments: 4
+                  message: "success show all content"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+
+  /contents/{id_content}:
+    put:
+      tags:
+        - contents
+      summary: edit content from post
+      description: edit content from user post
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id_content
+          description: id content
+          required: true
+          in: path
+          schema:
+            description: id content
+            type: string
+            example: 1
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              example: 
+                content: "Good tea in the morning"
+      responses:
+        200:
+          description: update content success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  id: 1
+                  content: "Good tea in the morning"
+                  update_at: "2023-01-16 14:20:42"
+                message: "success update content"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+
+    delete:
+      tags:
+        - contents
+      summary: delete user content
+      description: deleting content from user post
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id_content
+          description: id content
+          required: true
+          in: path
+          schema:
+            description: id content
+            type: string
+            example: 1
+      responses:
+        200:
+          description: success delete post
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: "success delete content from user post"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+
+    get:
+      tags:
+        - contents
+      summary: show detail content
+      description: show detail data content
+      parameters:
+        - name: id_content
+          description: "id content"
+          required: true
+          in: path
+          schema:
+            description: "id content"
+            type: string
+            example: 1
+      responses:
+        200:
+          description: success show detail content
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 1
+                    content: "This morning I make good scramble egg for breakfast. Yumm!"
+                    image: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673892611/go-cloudinary/gxjitapwl7pjcgskb3ph.jpg"
+                    comments: 2
+                    create_at: "2023-01-16 13:56:42"
+                    users:
+                      id_user: 1
+                      username: "alfian2316"
+                      profilepicture: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673892611/go-cloudinary/gxjitapwl7pjcgskb3ph.jpg"
+                    comment: 
+                      - id: 1
+                        comment: "Happy holiday"
+                        users:
+                          id_user: 2
+                          username: "fatmakima"
+                          profilepicture: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673892611/go-cloudinary/gxjitapwl7pjcgskb3ph.jpg"
+                        created_at: "2023-01-16 13:57:42"
+                      - id: 2
+                        comment: "Happy holiday y all"
+                        users:
+                          id_user: 4
+                          username: "power"
+                          profilepicture: "https://res.cloudinary.com/dbg0177wd/image/upload/v1673892611/go-cloudinary/gxjitapwl7pjcgskb3ph.jpg"
+                        created_at: "2023-01-16 13:57:42"
+                          
+                  message: "success show detail content"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+
+  /comments/{id_content}:
+    post:
+      tags:
+        - comments
+      summary: add comment to user content by id content
+      description: adding comment to content based on id content
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id_content
+          description: "id content"
+          required: true
+          in: path
+          schema:
+            description: "id content"
+            type: string
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example: 1
+            example: 
+              comment: "Hello hannah! Long time no see"
+      responses:
+        201: 
+          description: "succes create comment"
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                    message: "succes create comment"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+
+  /comments/{id_comment}:
+    delete:
+      tags:
+        - comments
+      summary: delete comment user content based id content
+      description: "deleting comment user content based id content"
+      security: 
+        - JWTAuth: []
+      parameters:
+        - name: id_comment
+          description: "id_comment"
+          required: true
+          in: path
+          schema:
+            description: "id_comment"
+            type: string
+            example: 1
+      responses:
+        200:
+          description: "success delete comment"
+          content: 
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: "delete comment success"
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+
+components:
+  securitySchemes:
+    JWTAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "user token"
+  schemas:
+    user:
+      type: object
+      properties:
+        id: 
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    content:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        id_user:
+          type: integer
+          format: int64
+        id_image:
+          type: string
+        content:
+          type: string
+    comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        id_user:
+          type: integer
+          format: int64
+        comment:
+          type: string
+
+    responseObject:
+      type: object
+      properties:
+        data:
+          type: object
+        message:
+          type: string
+    responseObjectArr:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        message:
+          type: string
+  responses:
+    400:
+      description: "error from user"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: "Bad request"
+    500:
+      description: "error from server"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: "Internal server error"
